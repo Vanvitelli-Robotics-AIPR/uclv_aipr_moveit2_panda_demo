@@ -10,7 +10,7 @@ Demo rete ros con planning MoveIt2! per il corso di Programmazione dei Robot.
 
 Nella cartella src del ros workspace
 ```bash
-git clone https://github.com/Vanvitelli-Robotics/moveit_resources_panda_moveit_config.git
+git clone https://github.com/Vanvitelli-Robotics-AIPR/moveit_resources_panda_moveit_config.git
 sudo apt update && rosdep install -r --from-paths . --ignore-src --rosdistro $ROS_DISTRO -y
 ```
 
