@@ -192,8 +192,8 @@ int main(int argc, char* argv[])
     ocm.weight = 1.0;
     moveit_msgs::msg::Constraints test_constraints;
     test_constraints.orientation_constraints.push_back(ocm);
-    move_group_interface.setPlanningTime(180);
-    move_group_interface.setPathConstraints(test_constraints); // <-- (un)comment for orientation constraint
+    // move_group_interface.setPlanningTime(180);
+    // move_group_interface.setPathConstraints(test_constraints); // <-- (un)comment for orientation constraint
 
     move_group_interface.setStartStateToCurrentState();  //<-- it is usefull to update the start state to the current
                                                          // state
