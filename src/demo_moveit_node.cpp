@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
   // move_group_interface.setPlannerId("RRTstarkConfigDefault");
   // move_group_interface.setPlannerId("RRTConnectkConfigDefault");
   // move_group_interface.setPlannerId("PRMkConfigDefault");
-  move_group_interface.setPlannerId("PRMstarkConfigDefault");
+  // move_group_interface.setPlannerId("PRMstarkConfigDefault");
 
   char ans;
 
@@ -186,14 +186,14 @@ int main(int argc, char* argv[])
     ocm.orientation.y = q.y();
     ocm.orientation.z = q.z();
     ocm.orientation.w = q.w();
-    ocm.absolute_x_axis_tolerance = 2.0 * M_PI;
-    ocm.absolute_y_axis_tolerance = 2.0 * M_PI / 180.0;
-    ocm.absolute_z_axis_tolerance = 2.0 * M_PI / 180.0;
+    ocm.absolute_x_axis_tolerance = 2.0 * M_PI; // 360 deg
+    ocm.absolute_y_axis_tolerance = 2.0 * M_PI / 180.0; // 2 deg
+    ocm.absolute_z_axis_tolerance = 2.0 * M_PI / 180.0; // 2 deg
     ocm.weight = 1.0;
     moveit_msgs::msg::Constraints test_constraints;
     test_constraints.orientation_constraints.push_back(ocm);
-    // move_group_interface.setPlanningTime(180);
-    // move_group_interface.setPathConstraints(test_constraints); // <-- (un)comment for orientation constraint
+    move_group_interface.setPlanningTime(180);
+    move_group_interface.setPathConstraints(test_constraints); // <-- (un)comment for orientation constraint
 
     move_group_interface.setStartStateToCurrentState();  //<-- it is usefull to update the start state to the current
                                                          // state
