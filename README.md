@@ -54,6 +54,13 @@ Press a key to continue...
 ```
 Inserire un qualsiasi **singolo** carattere e premere invio per continuare.
 
+## Plan con constraint
+
+Per abilitare i constraint di orientamento lanciare la demo con l'opzione `constraint`
+```bash
+ros2 run uclv_aipr_moveit2_panda_demo demo_moveit constraint
+```
+
 ## Codice
 Il codice dei due nodi è disponibile in questo repo.
 

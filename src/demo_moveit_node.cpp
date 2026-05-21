@@ -69,6 +69,22 @@ int main(int argc, char* argv[])
   auto node = std::make_shared<rclcpp::Node>(
       "demo_moveit", rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
 
+  bool constraint_enabled = false;
+  if (argc > 1)
+  {
+    if (std::string(argv[1]) == "constraint")
+    {
+      RCLCPP_WARN_STREAM(node->get_logger(), "Constraint Enabled!");
+      constraint_enabled = true;
+    }
+    else
+    {
+      RCLCPP_ERROR_STREAM(node->get_logger(), "Invalid option: " << argv[1]);
+      rclcpp::shutdown();
+      return -1;
+    }
+  }
+
   // We spin up a SingleThreadedExecutor for the current state monitor to get
   // information about the robot's state.
   // This way we don't have to spin
@@ -82,13 +98,16 @@ int main(int argc, char* argv[])
 
   moveit::planning_interface::MoveGroupInterface move_group_interface(node, PLANNING_GROUP);
 
-
+  /*********************************************
+   *  SCELTA PLANNER
+  *********************************************/
   /* Scelgo il planner da usare */
   move_group_interface.setPlanningTime(10);
   // move_group_interface.setPlannerId("RRTstarkConfigDefault");
   // move_group_interface.setPlannerId("RRTConnectkConfigDefault");
   // move_group_interface.setPlannerId("PRMkConfigDefault");
   // move_group_interface.setPlannerId("PRMstarkConfigDefault");
+  /**********************************************/
 
   char ans;
 
@@ -187,13 +206,16 @@ int main(int argc, char* argv[])
     ocm.orientation.z = q.z();
     ocm.orientation.w = q.w();
     ocm.absolute_x_axis_tolerance = 2.0 * M_PI; // 360 deg
-    ocm.absolute_y_axis_tolerance = 2.0 * M_PI / 180.0; // 2 deg
-    ocm.absolute_z_axis_tolerance = 2.0 * M_PI / 180.0; // 2 deg
+    ocm.absolute_y_axis_tolerance = 10.0 * M_PI / 180.0; // 10 deg
+    ocm.absolute_z_axis_tolerance = 10.0 * M_PI / 180.0; // 10 deg
     ocm.weight = 1.0;
     moveit_msgs::msg::Constraints test_constraints;
     test_constraints.orientation_constraints.push_back(ocm);
-    move_group_interface.setPlanningTime(180);
-    move_group_interface.setPathConstraints(test_constraints); // <-- (un)comment for orientation constraint
+    if(constraint_enabled)
+    {
+      move_group_interface.setPlanningTime(180);
+      move_group_interface.setPathConstraints(test_constraints);
+    }
 
     move_group_interface.setStartStateToCurrentState();  //<-- it is usefull to update the start state to the current
                                                          // state
@@ -219,6 +241,21 @@ int main(int argc, char* argv[])
     }
     else
     {
+      // retry if constraint enabled
+      if(constraint_enabled)
+      {
+        RCLCPP_ERROR_STREAM(node->get_logger(), "Plan failed with constraint, retry...");
+        bool success = (move_group_interface.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+        RCLCPP_INFO_STREAM(node->get_logger(), "plan " << (success ? "" : "FAILED"));
+        if (success)
+        {
+          move_group_interface.execute(my_plan);
+        }
+        else
+        {
+          return -1;
+        }
+      }
       return -1;
     }
 
